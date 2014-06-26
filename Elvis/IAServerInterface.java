@@ -10,4 +10,6 @@ public interface IAServerInterface extends Remote {
 	public void setCurrent(int current) throws RemoteException;
 	public void putBox(String color) throws RemoteException;
 	public String getCurrentColor() throws RemoteException;
+	public void registerBot(String botName, IAControllerInterface bot) throws RemoteException;
+	public void sendMessage(String s) throws RemoteException;
 }

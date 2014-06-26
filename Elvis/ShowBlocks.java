@@ -1,6 +1,7 @@
 package Elvis;
 
 import java.io.PrintWriter;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.LinkedList;
@@ -18,7 +19,7 @@ public class ShowBlocks extends IAController {
 	
 	IAServerInterface ias;
 	
-	public ShowBlocks() {
+	public ShowBlocks() throws RemoteException {
 		Registry registry;
 		try {
 			registry = LocateRegistry.getRegistry(8001);
@@ -117,7 +118,7 @@ public class ShowBlocks extends IAController {
 		return block.substring(block.indexOf(",") + 1, block.length() - 1);
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws RemoteException {
 		ShowBlocks controller = new ShowBlocks();
 		Scanner scanner = new Scanner(System.in);
 		String action = null;

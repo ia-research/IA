@@ -2,6 +2,7 @@ package Elvis;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.LinkedList;
@@ -17,15 +18,7 @@ public class GetBlocksWithServer extends IAController {
 			"RoomB1", "RoomB2", "RoomB3",
 			"RoomC1", "RoomC2", "RoomC3"};
 	
-	IAServerInterface ias;
-	
-	public GetBlocksWithServer() {
-		Registry registry;
-		try {
-			registry = LocateRegistry.getRegistry(8001);
-			ias = (IAServerInterface) registry.lookup("IAServer");
-		} catch (Exception ex) {}
-	}
+	public GetBlocksWithServer() throws RemoteException {}
 	
 	public void traverse() {
 		int i = 0;
@@ -62,16 +55,16 @@ public class GetBlocksWithServer extends IAController {
 						//pw.close();
 						
 						goToBlock(getBlockId(p.toProlog()));
-						Thread.sleep(100);
+						Thread.sleep(200);
 						pickUp();
-						Thread.sleep(100);
+						Thread.sleep(200);
 						goTo("DropZone");
 						
 						checkArrived();
 						
 						putDown();
 						ias.putBox(getBlockColor(p.toProlog()));
-						Thread.sleep(100);
+						Thread.sleep(200);
 						break;
 					}
 				}
@@ -125,7 +118,7 @@ public class GetBlocksWithServer extends IAController {
 		return block.substring(block.indexOf(",") + 1, block.length() - 1);
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws RemoteException {
 		GetBlocksWithServer controller = new GetBlocksWithServer();
 		Scanner scanner = new Scanner(System.in);
 		String action = null;

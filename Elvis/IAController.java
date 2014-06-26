@@ -1,6 +1,10 @@
 package Elvis;
 
 import java.rmi.Naming;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.LinkedList;
 import java.util.Scanner;
 
@@ -10,20 +14,28 @@ import eis.iilang.Parameter;
 import eis.iilang.Percept;
 import nl.tudelft.bw4t.server.BW4TServerActions;
 
-public class IAController { // BW4TAgent
+public class IAController extends UnicastRemoteObject implements IAControllerInterface { // BW4TAgent
 	protected String bot = null;
 	protected BW4TServerActions server = null;
 	// private BW4TClientActions client = null;
 	
+	protected IAServerInterface ias;
+	
 	public void setBot(String bot) {
 		this.bot = bot;
+
+		try {
+			ias.registerBot(bot, this);
+		} catch (Exception ex) {
+			System.err.println("Exception: ias.registerBot(bot, this)");
+		}
 	}
 	
 	public String getBot() {
 		return bot;
 	}
 
-	public IAController() { // is rmi safe?
+	public IAController() throws RemoteException {
 		/*
 		try {
 			LocateRegistry.createRegistry(Integer.parseInt("2000")); // client port 2000
@@ -45,6 +57,13 @@ public class IAController { // BW4TAgent
 			System.err.println("Exception: Failed to connect to client");
 		}
 		*/
+		
+		try {
+			Registry registry = LocateRegistry.getRegistry(8001);
+			ias = (IAServerInterface) registry.lookup("IAServer");
+		} catch (Exception ex) {
+			System.err.println("Exception: Failed to connect to IAServer");
+		}
 	}
 	
 	// goTo(X, Y)
@@ -130,10 +149,21 @@ public class IAController { // BW4TAgent
 			return;
 		}
 		
+		/*
 		if (action.contains("sendMessage")) {
 			String param = action.substring(12, action.length() - 1);
 			String[] params = param.split(", ");
 			sendMessage(params[0], params[1]);
+			return;
+		}
+		*/
+		
+		if (action.contains("sendMessage")) {
+			String param = action.substring(12, action.length() - 1);
+			String[] params = param.split(", ");
+			try {
+				ias.sendMessage(params[1]); // params[0] <PlayerID>, params[1] <Content>
+			} catch (Exception e) {}
 			return;
 		}
 		
@@ -158,7 +188,12 @@ public class IAController { // BW4TAgent
 		System.err.println("Wrong action " + bot);
 	}
 	
-	public static void main(String[] args) {
+	@Override
+	public void receiveMessage(String s) throws RemoteException {
+		System.out.println(bot + ":" + s);
+	}
+	
+	public static void main(String[] args) throws RemoteException {
 		IAController controller = new IAController();
 		Scanner scanner = new Scanner(System.in);
 		String action = null;

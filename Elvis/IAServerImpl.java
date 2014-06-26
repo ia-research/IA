@@ -4,6 +4,15 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
+import java.util.Map;
+
+import nl.tudelft.bw4t.BW4TEnvironmentListener;
+import nl.tudelft.bw4t.client.BW4TRemoteEnvironment;
+import eis.exceptions.ManagementException;
+import eis.exceptions.NoEnvironmentException;
+import eis.iilang.Identifier;
+import eis.iilang.Parameter;
 
 public class IAServerImpl extends UnicastRemoteObject implements IAServerInterface {
 	// PINK
@@ -19,6 +28,7 @@ public class IAServerImpl extends UnicastRemoteObject implements IAServerInterfa
 			"BLUE", "YELLOW", "YELLOW", "WHITE", "YELLOW",
 			"ORANGE", "ORANGE", "PINK", "WHITE", "GREEN"};
 	private int current = 0;
+	private Map<String, IAControllerInterface> bots = new HashMap<String, IAControllerInterface>();
 	
 	public IAServerImpl() throws RemoteException {}
 	
@@ -56,8 +66,38 @@ public class IAServerImpl extends UnicastRemoteObject implements IAServerInterfa
 			return colors[current];
 		return null;
 	}
+	
+	@Override
+	synchronized public void registerBot(String botName, IAControllerInterface bot) throws RemoteException {
+		bots.put(botName, bot);
+	}
 
-	public static void main(String[] args) throws RemoteException {
+	@Override
+	synchronized public void sendMessage(String s) throws RemoteException {
+		for (IAControllerInterface bot: bots.values()) {
+			bot.receiveMessage(s);
+		}
+	}
+	
+	private static String findArgument(String[] args, InitParam param) {
+		for (int i = 0; i < args.length - 1; i++) {
+			if (args[i].equalsIgnoreCase("-" + param.nameLower())) {
+				return args[(i + 1)];
+			}
+		}
+		return param.getDefaultValue();
+	}
+	
+	public static void main(String[] args) throws RemoteException, ManagementException, NoEnvironmentException {
+		Map<String, Parameter> initParameters = new HashMap<String, Parameter>();
+		for (InitParam param : InitParam.values()) {
+			initParameters.put(param.nameLower(),
+					new Identifier(findArgument(args, param)));
+		}
+		BW4TRemoteEnvironment env = new BW4TRemoteEnvironment();
+		env.attachEnvironmentListener(new BW4TEnvironmentListener(env));
+		env.init(initParameters);		
+		
 		IAServerImpl server = new IAServerImpl();
 		Registry registry;
 		
@@ -68,6 +108,6 @@ public class IAServerImpl extends UnicastRemoteObject implements IAServerInterfa
 		}
 		
 		registry.rebind("IAServer", server);
-		System.out.println("Server ready");
+		System.out.println("IAServer ready");
 	}
 }
