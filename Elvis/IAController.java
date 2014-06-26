@@ -70,22 +70,6 @@ public class IAController { // BW4TAgent
 		try {
 			Parameter[] idParam = Translator.getInstance().translate2Parameter(placeID); // e.g. RoomA1, DropZone
 			server.performEntityAction(bot, new Action("goTo", idParam));
-			
-			LinkedList<Percept> percepts = null;
-
-			outerLoop:
-			while (true) {
-				percepts = server.getAllPerceptsFromEntity(bot);
-				for (Percept p: percepts)
-					if (p.toProlog().equals("state(arrived)")) // arrived room
-						break outerLoop;
-			}
-
-			// get all colors from room
-			percepts = server.getAllPerceptsFromEntity(bot);
-			for (Percept p: percepts)
-				System.out.println(p.toProlog());
-			
 		} catch (Exception ex) {
 			System.err.println("Exception: goTo(<PlaceID>) " + bot);
 		}
