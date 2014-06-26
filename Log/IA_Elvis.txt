@@ -1,0 +1,9 @@
+RoomC2:32
+RoomC3:32
+RoomC1:32
+RoomA1:32
+RoomB2:32
+RoomB1:32
+RoomB3:32
+RoomA3:32
+RoomA2:32

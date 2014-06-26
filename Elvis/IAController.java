@@ -61,7 +61,7 @@ public class IAController { // BW4TAgent
 			
 			server.performEntityAction(bot, new Action("goTo", parameters));
 		} catch (Exception ex) {
-			System.err.println("Exception: goTo(X, Y)");
+			System.err.println("Exception: goTo(X, Y) " + bot);
 		}
 	}
 	
@@ -87,7 +87,7 @@ public class IAController { // BW4TAgent
 				System.out.println(p.toProlog());
 			
 		} catch (Exception ex) {
-			System.err.println("Exception: goTo(<PlaceID>)");
+			System.err.println("Exception: goTo(<PlaceID>) " + bot);
 		}
 	}
 	
@@ -97,7 +97,7 @@ public class IAController { // BW4TAgent
 			Parameter[] idParam = Translator.getInstance().translate2Parameter(Long.valueOf(blockID));
 			server.performEntityAction(bot, new Action("goToBlock", idParam));
 		} catch (Exception ex) {
-			System.err.println("Exception: goToBlock(<BlockID>)");
+			System.err.println("Exception: goToBlock(<BlockID>) " + bot);
 		}
 	}
 	
@@ -106,7 +106,7 @@ public class IAController { // BW4TAgent
 		try {
 			server.performEntityAction(bot, new Action("pickUp"));
 		} catch (Exception ex) {
-			System.err.println("Exception: pickUp()");
+			System.err.println("Exception: pickUp() " + bot);
 		}
 	}
 	
@@ -115,7 +115,7 @@ public class IAController { // BW4TAgent
 		try {
 			server.performEntityAction(bot, new Action("putDown"));
 		} catch (Exception ex) {
-			System.err.println("Exception: putDown()");
+			System.err.println("Exception: putDown() " + bot);
 		}
 	}
 	
@@ -131,7 +131,7 @@ public class IAController { // BW4TAgent
 			parameters[1] = messageParam[0];
 			server.performEntityAction(bot, new Action("sendMessage", parameters));
 		} catch (Exception ex) {
-			System.err.println("Exception: sendMessage(<PlayerID>, <Content>)");
+			System.err.println("Exception: sendMessage(<PlayerID>, <Content>) " + bot);
 		}
 	} 
 	
@@ -171,7 +171,7 @@ public class IAController { // BW4TAgent
 			}
 		}
 		
-		System.out.println("Wrong action");
+		System.err.println("Wrong action " + bot);
 	}
 	
 	public static void main(String[] args) {

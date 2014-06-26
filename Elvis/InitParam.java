@@ -7,7 +7,7 @@ public enum InitParam {
 	SERVERPORT("8000"),
 	AGENTCOUNT("0"),
 	LAUNCHGUI("true"), // agent set false
-	HUMANCOUNT("2"), // agent set 0
+	HUMANCOUNT("3"), // agent set 0
 	AGENTCLASS("nl.tudelft.bw4t.agent.BW4TAgent"),
 	GOAL("false");
 	

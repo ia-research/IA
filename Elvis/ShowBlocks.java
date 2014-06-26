@@ -58,7 +58,7 @@ public class ShowBlocks extends IAController {
 		long t;
 		LinkedList<Percept> percepts = null;
 		
-		try {
+		//try {
 			while (true) {
 				goTo(rooms[i++ % rooms.length]);
 
@@ -66,25 +66,33 @@ public class ShowBlocks extends IAController {
 				
 				outerLoop:
 				while (true) {
-					percepts = server.getAllPerceptsFromEntity(bot);
-					// if (percepts.isEmpty() && System.currentTimeMillis() - t > 3000)
-					if (System.currentTimeMillis() - t > 3000) // overtime
-						break;
-					for (Percept p: percepts)
-						if (p.toProlog().equals("state(arrived)")) // arrived room
-							break outerLoop;
-					// System.out.println(System.currentTimeMillis() - t);
+					try {
+						percepts = server.getAllPerceptsFromEntity(bot);
+						// if (percepts.isEmpty() && System.currentTimeMillis() - t > 3000)
+						if (System.currentTimeMillis() - t > 3000) // overtime
+							break;
+						for (Percept p: percepts)
+							if (p.toProlog().equals("state(arrived)")) // arrived room
+								break outerLoop;
+						// System.out.println(System.currentTimeMillis() - t);
+					} catch (Exception ex) {
+						System.err.println("Exception: traverse()");
+					}
 				}
 
 				// get all colors from room
-				percepts = server.getAllPerceptsFromEntity(bot);
-				for (Percept p: percepts) {
-					System.out.println(p.toProlog());
+				try {
+					percepts = server.getAllPerceptsFromEntity(bot);
+					for (Percept p: percepts) {
+						System.out.println(p.toProlog());
+					}
+				} catch (Exception ex) {
+					System.err.println("Exception: traverse()");
 				}
 			}
-		} catch (Exception ex) {
-			System.err.println("Exception: traverse()");
-		}
+		//} catch (Exception ex) {
+		//	System.err.println("Exception: traverse()");
+		//}
 	}
 	
 	@Override

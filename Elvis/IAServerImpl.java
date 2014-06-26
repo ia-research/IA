@@ -13,7 +13,11 @@ public class IAServerImpl extends UnicastRemoteObject implements IAServerInterfa
 	// BLUE
 	// GREEN
 	// ORANGE
-	private String[] colors = new String[] {"GREEN", "BLUE", "RED", "WHITE", "RED", "GREEN"};
+	//private String[] colors = new String[] {"ORANGE", "RED", "YELLOW", "BLUE", "WHITE", "YELLOW"};
+	private String[] colors = new String[] {"ORANGE", "RED", "YELLOW", "BLUE", "WHITE",
+			"YELLOW", "GREEN", "PINK", "WHITE", "RED",
+			"BLUE", "YELLOW", "YELLOW", "WHITE", "YELLOW",
+			"ORANGE", "ORANGE", "PINK", "WHITE", "GREEN"};
 	private int current = 0;
 	
 	public IAServerImpl() throws RemoteException {}
@@ -64,5 +68,6 @@ public class IAServerImpl extends UnicastRemoteObject implements IAServerInterfa
 		}
 		
 		registry.rebind("IAServer", server);
+		System.out.println("Server ready");
 	}
 }

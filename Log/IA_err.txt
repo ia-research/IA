@@ -1,0 +1,5 @@
+Exception: traverse() - 1 Bot3
+Exception: traverse() - 1 Bot1
+Exception: traverse() - 1 Bot3
+Exception: traverse() - 1 Bot1
+Exception: traverse() - 1 Bot2

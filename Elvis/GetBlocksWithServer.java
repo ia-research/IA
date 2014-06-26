@@ -1,5 +1,6 @@
 package Elvis;
 
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -49,7 +50,7 @@ public class GetBlocksWithServer extends IAController {
 				System.out.println(p.toProlog());
 			*/
 		} catch (Exception ex) {
-			System.err.println("Exception: goTo(<PlaceID>)");
+			System.err.println("Exception: goTo(<PlaceID>) " + bot);
 		}
 	}
 	
@@ -59,6 +60,10 @@ public class GetBlocksWithServer extends IAController {
 		LinkedList<Percept> percepts = null;
 		
 		try {
+			System.setErr(new PrintStream("IA_err.txt"));
+		} catch (Exception ex) {}
+		
+		//try {
 			while (true) {
 				goTo(rooms[i++ % rooms.length]);
 
@@ -66,52 +71,64 @@ public class GetBlocksWithServer extends IAController {
 				
 				outerLoop:
 				while (true) {
-					percepts = server.getAllPerceptsFromEntity(bot);
-					// if (percepts.isEmpty() && System.currentTimeMillis() - t > 3000)
-					if (System.currentTimeMillis() - t > 3000) // overtime
-						break;
-					for (Percept p: percepts)
-						if (p.toProlog().equals("state(arrived)")) // arrived room
-							break outerLoop;
-					// System.out.println(System.currentTimeMillis() - t);
+					try {
+						percepts = server.getAllPerceptsFromEntity(bot);
+						// if (percepts.isEmpty() && System.currentTimeMillis() - t > 3000)
+						if (System.currentTimeMillis() - t > 3000) // overtime
+							break;
+						for (Percept p: percepts)
+							if (p.toProlog().equals("state(arrived)")) // arrived room
+								break outerLoop;
+						// System.out.println(System.currentTimeMillis() - t);
+					} catch (Exception ex) {
+						System.err.println("Exception: traverse() - 1 " + bot);
+					}
 				}
 
 				// get all colors from room
-				percepts = server.getAllPerceptsFromEntity(bot);
-				for (Percept p: percepts) {
-					System.out.println(p.toProlog());
+				try {
+					percepts = server.getAllPerceptsFromEntity(bot);
+					for (Percept p: percepts) {
+						System.out.println(p.toProlog());
+					}
+				} catch (Exception ex) {
+					System.err.println("Exception: traverse() - 2 " + bot);
 				}
 				
 				// pick & drop color
-				String color = ias.getCurrentColor();
-				System.out.println(bot + " need: " + color);
-				for (Percept p: percepts) {
-					if (color.equals(getBlockColor(p.toProlog()))) {
-						
-						PrintWriter pw = new PrintWriter("log.txt");
-						pw.println(bot + ":" + p.toProlog());
-						pw.close();
-						
-						goToBlock(getBlockId(p.toProlog()));
-						Thread.sleep(500);
-						pickUp();
-						Thread.sleep(500);
-						goTo("DropZone");
-						Thread.sleep(3000);
-						putDown();
-						ias.putBox(this.getBlockColor(p.toProlog()));
-						Thread.sleep(500);
-						break;
+				try {
+					String color = ias.getCurrentColor();
+					System.out.println(bot + " need: " + color);
+					for (Percept p: percepts) {
+						if (color.equals(getBlockColor(p.toProlog()))) {
+							
+							PrintWriter pw = new PrintWriter("log.txt");
+							pw.println(bot + ":" + p.toProlog());
+							pw.close();
+							
+							goToBlock(getBlockId(p.toProlog()));
+							Thread.sleep(500);
+							pickUp();
+							Thread.sleep(500);
+							goTo("DropZone");
+							Thread.sleep(3000);
+							putDown();
+							ias.putBox(this.getBlockColor(p.toProlog()));
+							Thread.sleep(500);
+							break;
+						}
 					}
+					
+					// stop traversal
+					if (ias.getCurrent() >= ias.getColors().length)
+						break;
+				} catch (Exception ex) {
+					System.err.println("Exception: traverse() - 3 " + bot);
 				}
-				
-				// stop traversal
-				if (ias.getCurrent() >= ias.getColors().length)
-					break;
 			}
-		} catch (Exception ex) {
-			System.err.println("Exception: traverse()");
-		}
+		//} catch (Exception ex) {
+		//	System.err.println("Exception: traverse() " + bot);
+		//}
 	}
 	
 	@Override
