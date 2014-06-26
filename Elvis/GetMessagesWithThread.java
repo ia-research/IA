@@ -12,19 +12,46 @@ import eis.iilang.Action;
 import eis.iilang.Parameter;
 import eis.iilang.Percept;
 
-public class GetBlocksWithServer extends IAController {
+public class GetMessagesWithThread extends IAController {
 	private String[] rooms = new String[] {"RoomA1", "RoomA2", "RoomA3",
 			"RoomB1", "RoomB2", "RoomB3",
 			"RoomC1", "RoomC2", "RoomC3"};
 	
 	IAServerInterface ias;
 	
-	public GetBlocksWithServer() {
+	public GetMessagesWithThread() {
 		Registry registry;
 		try {
 			registry = LocateRegistry.getRegistry(8001);
 			ias = (IAServerInterface) registry.lookup("IAServer");
 		} catch (Exception ex) {}
+		
+		// Thread for receiving messages
+		new Thread() {
+			public void run() {
+				LinkedList<Percept> percepts = null;
+				try {
+					System.setErr(new PrintStream("log.txt"));
+				} catch (Exception ex) {}
+				
+				while (true) {
+					try {
+						Thread.sleep(10);
+					} catch (Exception ex) {}
+					if (bot == null)
+						continue;
+					//System.out.println(bot);
+					try {
+						percepts = server.getAllPerceptsFromEntity(bot);
+						for (Percept p: percepts)
+							if (p.toProlog().contains("message")) // receive messages
+								System.out.println(p.toProlog());
+					} catch (Exception ex) {
+						System.err.println("Exception: Thread() " + bot);
+					}
+				}
+			}
+		}.start();
 	}
 	
 	// goTo(<PlaceID>)
@@ -56,7 +83,7 @@ public class GetBlocksWithServer extends IAController {
 	
 	public void traverse() {
 		int i = 0;
-		//long t;
+		long t;
 		LinkedList<Percept> percepts = null;
 		
 		try {
@@ -67,10 +94,8 @@ public class GetBlocksWithServer extends IAController {
 			while (true) {
 				goTo(rooms[i++ % rooms.length]);
 
-				//t = System.currentTimeMillis();
+				t = System.currentTimeMillis();
 				
-				checkArrived();
-				/*
 				outerLoop:
 				while (true) {
 					try {
@@ -86,7 +111,6 @@ public class GetBlocksWithServer extends IAController {
 						System.err.println("Exception: traverse() - 1 " + bot);
 					}
 				}
-				*/
 
 				// get all colors from room
 				try {
@@ -105,21 +129,19 @@ public class GetBlocksWithServer extends IAController {
 					for (Percept p: percepts) {
 						if (color.equals(getBlockColor(p.toProlog()))) {
 							
-							//PrintWriter pw = new PrintWriter("log.txt");
-							//pw.println(bot + ":" + p.toProlog());
-							//pw.close();
+							PrintWriter pw = new PrintWriter("log.txt");
+							pw.println(bot + ":" + p.toProlog());
+							pw.close();
 							
 							goToBlock(getBlockId(p.toProlog()));
-							Thread.sleep(100);
+							Thread.sleep(500);
 							pickUp();
-							Thread.sleep(100);
+							Thread.sleep(500);
 							goTo("DropZone");
-							
-							checkArrived();
-							
+							Thread.sleep(3000);
 							putDown();
-							ias.putBox(getBlockColor(p.toProlog()));
-							Thread.sleep(100);
+							ias.putBox(this.getBlockColor(p.toProlog()));
+							Thread.sleep(500);
 							break;
 						}
 					}
@@ -136,26 +158,6 @@ public class GetBlocksWithServer extends IAController {
 		//}
 	}
 	
-	private void checkArrived() {
-		long t;
-		LinkedList<Percept> percepts = null;
-		
-		t = System.currentTimeMillis();
-		
-		while (true) {
-			try {
-				percepts = server.getAllPerceptsFromEntity(bot);
-				if (System.currentTimeMillis() - t > 3000) // overtime
-					return;
-				for (Percept p: percepts)
-					if (p.toProlog().equals("state(arrived)")) // arrived room
-						return;
-			} catch (Exception ex) {
-				System.err.println("Exception: traverse() - 1 " + bot);
-			}
-		}
-	}
-
 	@Override
 	public void handleAction(String action) {
 		if (action.contains("traverse")) {
@@ -179,7 +181,7 @@ public class GetBlocksWithServer extends IAController {
 	}
 	
 	public static void main(String[] args) {
-		GetBlocksWithServer controller = new GetBlocksWithServer();
+		GetMessagesWithThread controller = new GetMessagesWithThread();
 		Scanner scanner = new Scanner(System.in);
 		String action = null;
 		
