@@ -162,7 +162,8 @@ public class IAController extends UnicastRemoteObject implements IAControllerInt
 			String param = action.substring(12, action.length() - 1);
 			String[] params = param.split(", ");
 			try {
-				ias.sendMessage(params[1]); // params[0] <PlayerID>, params[1] <Content>
+				ias.sendMessage(params[0], params[1]);
+				//ias.sendMessage(params[1]); // params[0] <PlayerID>, params[1] <Content>
 			} catch (Exception e) {}
 			return;
 		}
@@ -190,7 +191,12 @@ public class IAController extends UnicastRemoteObject implements IAControllerInt
 	
 	@Override
 	public void receiveMessage(String s) throws RemoteException {
-		System.out.println(bot + ":" + s);
+		//System.out.println(bot + ":" + s);
+		String action = s.substring(0, 2);
+		if (action.equals("00")) // display message
+			System.out.println(bot + ":" + s.substring(3));
+		if (action.equals("01")) // go to rooms
+			goTo(s.substring(3));
 	}
 	
 	public static void main(String[] args) throws RemoteException {

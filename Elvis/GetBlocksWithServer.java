@@ -29,6 +29,12 @@ public class GetBlocksWithServer extends IAController {
 		} catch (Exception ex) {}
 		
 		while (true) {
+			// stop traversal (prevent from exception)
+			try {
+				if (ias.getCurrent() >= ias.getColors().length)
+					break;
+			} catch (Exception ex) {}
+			
 			goTo(rooms[i++ % rooms.length]);
 			
 			checkArrived();
@@ -68,10 +74,11 @@ public class GetBlocksWithServer extends IAController {
 						break;
 					}
 				}
-				
+				/*
 				// stop traversal
 				if (ias.getCurrent() >= ias.getColors().length)
 					break;
+				*/
 			} catch (Exception ex) {
 				System.err.println("Exception: traverse() - 2 " + bot);
 			}

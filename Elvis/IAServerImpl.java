@@ -1,5 +1,6 @@
 package Elvis;
 
+import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -29,8 +30,14 @@ public class IAServerImpl extends UnicastRemoteObject implements IAServerInterfa
 			"ORANGE", "ORANGE", "PINK", "WHITE", "GREEN"};
 	private int current = 0;
 	private Map<String, IAControllerInterface> bots = new HashMap<String, IAControllerInterface>();
+	long t = 0;
+	PrintWriter pw;
 	
-	public IAServerImpl() throws RemoteException {}
+	public IAServerImpl() throws RemoteException {
+		try {
+			pw = new PrintWriter("IAServer_log.txt");
+		} catch (Exception ex) {}
+	}
 	
 	@Override
 	synchronized public String[] getColors() throws RemoteException {
@@ -44,6 +51,7 @@ public class IAServerImpl extends UnicastRemoteObject implements IAServerInterfa
 
 	@Override
 	synchronized public int getCurrent() throws RemoteException {
+		System.out.println("getCurrent() : " + current);
 		return current;
 	}
 
@@ -57,10 +65,22 @@ public class IAServerImpl extends UnicastRemoteObject implements IAServerInterfa
 		System.out.println(color + "(current: " + current + ")");
 		if (current < colors.length && color.equals(colors[current]))
 			current++;
+		if (current == colors.length) {
+			try {
+				pw.println((System.currentTimeMillis() - t) / 1000.0 + "sec(s)");
+				pw.close();
+			} catch (Exception ex) {}
+			//System.out.println((System.currentTimeMillis() - t) / 1000.0 + "sec(s)");
+		}
 	}
 
 	@Override
 	synchronized public String getCurrentColor() throws RemoteException {
+		if (t == 0) {
+			t = System.currentTimeMillis();
+			System.out.println("Stopwatch starts");
+		}
+		
 		System.out.println("getCurrentColor()" + "(current: " + current + ")");
 		if (current < colors.length)
 			return colors[current];
@@ -76,6 +96,14 @@ public class IAServerImpl extends UnicastRemoteObject implements IAServerInterfa
 	synchronized public void sendMessage(String s) throws RemoteException {
 		for (IAControllerInterface bot: bots.values()) {
 			bot.receiveMessage(s);
+		}
+	}
+	
+	@Override
+	public void sendMessage(String botName, String s) throws RemoteException {
+		for (String bot: bots.keySet()) {
+			if (bot.equals(botName))
+				bots.get(bot).receiveMessage(s);
 		}
 	}
 	
