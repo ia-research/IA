@@ -37,7 +37,8 @@ public class GetBlocksWithServer extends IAController {
 			
 			goTo(rooms[i++ % rooms.length]);
 			
-			checkArrived();
+			if (!isArrived())
+				continue;
 
 			// get all colors from room
 			try {
@@ -64,9 +65,10 @@ public class GetBlocksWithServer extends IAController {
 						Thread.sleep(200);
 						pickUp();
 						Thread.sleep(200);
-						goTo("DropZone");
 						
-						checkArrived();
+						do {
+							goTo("DropZone");
+						} while (!isArrived()/* && ias.getCurrent() < ias.getColors().length*/);
 						
 						putDown();
 						ias.putBox(getBlockColor(p.toProlog()));
@@ -85,7 +87,7 @@ public class GetBlocksWithServer extends IAController {
 		}
 	}
 	
-	private void checkArrived() {
+	private boolean isArrived() {
 		long t = System.currentTimeMillis();
 		LinkedList<Percept> percepts = null;
 		
@@ -93,10 +95,10 @@ public class GetBlocksWithServer extends IAController {
 			try {
 				percepts = server.getAllPerceptsFromEntity(bot);
 				if (System.currentTimeMillis() - t > 3000) // overtime
-					return;
+					return false;
 				for (Percept p: percepts)
 					if (p.toProlog().equals("state(arrived)")) // arrived room
-						return;
+						return true;
 			} catch (Exception ex) {
 				System.err.println("Exception: checkArrived() " + bot);
 			}
