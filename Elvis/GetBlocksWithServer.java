@@ -20,6 +20,27 @@ public class GetBlocksWithServer extends IAController {
 	
 	public GetBlocksWithServer() throws RemoteException {}
 	
+	public void random() {
+		boolean[] isSelected = new boolean[rooms.length];
+		for (int i=0; i<rooms.length; i++)
+			isSelected[i] = false;
+		
+		String[] randomRooms = new String[rooms.length];
+		System.arraycopy(rooms, 0, randomRooms, 0, rooms.length);
+		
+		int i = 0;
+		while (i < rooms.length) {
+			int random = (int) (Math.random() * rooms.length);
+			if (!isSelected[random]) {
+				isSelected[random] = true;
+				rooms[i] = randomRooms[random];
+				i++;
+			}
+		}
+		
+		traverse();
+	}
+	
 	public void traverse() {
 		int i = 0;
 		LinkedList<Percept> percepts = null;
@@ -109,6 +130,11 @@ public class GetBlocksWithServer extends IAController {
 	public void handleAction(String action) {
 		if (action.contains("traverse")) {
 			traverse();
+			return;
+		}
+		
+		if (action.contains("random")) {
+			random();
 			return;
 		}
 		
