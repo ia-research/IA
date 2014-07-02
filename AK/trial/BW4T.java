@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package trial;
+package IA.AK.trial;
 
 import eis.eis2java.util.EIS2JavaUtil;
 import eis.iilang.Action;

@@ -1,4 +1,4 @@
-package trial;
+package IA.AK.trial;
 
 import java.rmi.Naming;
 // import java.rmi.registry.LocateRegistry;
