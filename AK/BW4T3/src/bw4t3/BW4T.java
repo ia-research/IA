@@ -2,9 +2,11 @@ package bw4t3;
 
 import eis.iilang.Identifier;
 import eis.iilang.Parameter;
+import eis.iilang.Percept;
 import java.util.HashMap;
 import java.util.Map;
 import nl.tudelft.bw4t.client.environment.Launcher;
+import nl.tudelft.bw4t.client.environment.RemoteEnvironment;
 
 public class BW4T {
 
@@ -36,6 +38,11 @@ public class BW4T {
                 }
             }
         }
-        Launcher.launch(args);
+        RemoteEnvironment env = Launcher.launch(args);
+        for(String st:env.storedPercepts.keySet()){
+            for(Percept p:env.storedPercepts.get(st)){
+                System.out.println(p.toProlog());
+            }
+        }
     }
 }

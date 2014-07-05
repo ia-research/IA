@@ -10,6 +10,9 @@ import java.util.Scanner;
 import eis.eis2java.translation.Translator;
 import eis.iilang.Action;
 import eis.iilang.Parameter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import nl.tudelft.bw4t.network.BW4TServerActions;
 
 
@@ -19,6 +22,12 @@ public class IAController extends UnicastRemoteObject implements IAControllerInt
 	// private BW4TClientActions client = null;
 	
 	protected IAServerInterface ias;
+        
+        public static final int ROOMS = 9;
+        protected long[] timeStamp = new long[ROOMS];
+        protected int next=0;
+        protected Map<String, Integer> nameToIndex;
+        protected Map<String, ArrayList<String>> memory ;
 	
 	public void setBot(String bot) {
 		this.bot = bot;
@@ -63,6 +72,9 @@ public class IAController extends UnicastRemoteObject implements IAControllerInt
 		} catch (Exception ex) {
 			System.err.println("Exception: Failed to connect to IAServer");
 		}
+                
+                nameToIndex = new HashMap<>();
+                memory = new HashMap<>();
 	}
 	
 	// goTo(X, Y)

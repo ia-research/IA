@@ -24,12 +24,12 @@ public class IAServerImpl extends UnicastRemoteObject implements IAServerInterfa
     // BLUE
     // GREEN
     // ORANGE
-    //private String[] colors = new String[] {"ORANGE", "RED", "YELLOW", "BLUE", "WHITE", "YELLOW"};
+    private String[] colors = new String[] {"RED", "GREEN", "YELLOW", "BLUE", "WHITE", "YELLOW"};
 
-    private String[] colors = new String[]{"ORANGE", "RED", "YELLOW", "BLUE", "WHITE",
+    /*private String[] colors = new String[]{"ORANGE", "RED", "YELLOW", "BLUE", "WHITE",
         "YELLOW", "GREEN", "PINK", "WHITE", "RED",
         "BLUE", "YELLOW", "YELLOW", "WHITE", "YELLOW",
-        "ORANGE", "ORANGE", "PINK", "WHITE", "GREEN"};
+        "ORANGE", "ORANGE", "PINK", "WHITE", "GREEN"};*/
     private int current = 0;
     private Map<String, IAControllerInterface> bots = new HashMap<String, IAControllerInterface>();
     long t = 0;
