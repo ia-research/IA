@@ -195,6 +195,11 @@ public class GetBlocksWithServer extends IAController {
             }
             return;
         }
+        
+        if(action.contains("total")){
+            System.out.println(totalActionPerformed);
+            return;
+        }
 
         super.handleAction(action);
     }

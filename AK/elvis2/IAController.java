@@ -35,7 +35,7 @@ public class IAController extends UnicastRemoteObject implements IAControllerInt
     protected int next = 0;
     protected Map<String, Integer> nameToIndex;
     protected Map<String, Set<String>> memory;
-    protected int actionPerformed;    
+    protected int totalActionPerformed;    
     
     public void setBot(String bot) {
         this.bot = bot;
@@ -51,6 +51,10 @@ public class IAController extends UnicastRemoteObject implements IAControllerInt
         return bot;
     }
 
+    public int getTotal(){
+        return totalActionPerformed;
+    }
+    
     public IAController() throws RemoteException {
         /*
          try {
@@ -83,7 +87,7 @@ public class IAController extends UnicastRemoteObject implements IAControllerInt
 
         nameToIndex = new HashMap<>();
         memory = new HashMap<>();
-        actionPerformed=0;
+        totalActionPerformed=0;
     }
 
     // goTo(X, Y)
@@ -99,8 +103,11 @@ public class IAController extends UnicastRemoteObject implements IAControllerInt
             parameters[1] = yParam[0];
 
             server.performEntityAction(bot, new Action("goTo", parameters));
+            totalActionPerformed++;
         } catch (Exception ex) {
             System.err.println("Exception: goTo(X, Y) " + bot);
+        }finally{
+            totalActionPerformed++;
         }
     }
 
@@ -111,6 +118,8 @@ public class IAController extends UnicastRemoteObject implements IAControllerInt
             server.performEntityAction(bot, new Action("goTo", idParam));
         } catch (Exception ex) {
             System.err.println("Exception: goTo(<PlaceID>) " + bot);
+        }finally{
+            totalActionPerformed++;
         }
     }
 
@@ -121,6 +130,8 @@ public class IAController extends UnicastRemoteObject implements IAControllerInt
             server.performEntityAction(bot, new Action("goToBlock", idParam));
         } catch (Exception ex) {
             System.err.println("Exception: goToBlock(<BlockID>) " + bot);
+        }finally{
+            totalActionPerformed++;
         }
     }
 
@@ -130,6 +141,8 @@ public class IAController extends UnicastRemoteObject implements IAControllerInt
             server.performEntityAction(bot, new Action("pickUp"));
         } catch (Exception ex) {
             System.err.println("Exception: pickUp() " + bot);
+        }finally{
+            totalActionPerformed++;
         }
     }
 
@@ -139,6 +152,8 @@ public class IAController extends UnicastRemoteObject implements IAControllerInt
             server.performEntityAction(bot, new Action("putDown"));
         } catch (Exception ex) {
             System.err.println("Exception: putDown() " + bot);
+        }finally{
+            totalActionPerformed++;
         }
     }
 
@@ -156,6 +171,8 @@ public class IAController extends UnicastRemoteObject implements IAControllerInt
             server.performEntityAction(bot, new Action("sendMessage", parameters));
         } catch (Exception ex) {
             System.err.println("Exception: sendMessage(<PlayerID>, <Content>) " + bot);
+        }finally{
+            totalActionPerformed++;
         }
     }
 
@@ -171,6 +188,7 @@ public class IAController extends UnicastRemoteObject implements IAControllerInt
                 }
             }catch(NullPointerException npe){}
         }
+        totalActionPerformed++;
         return rm;
     }
 
