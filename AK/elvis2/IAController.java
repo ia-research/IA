@@ -178,6 +178,12 @@ public class IAController extends UnicastRemoteObject implements IAControllerInt
         }
     }
 
+    @Override
+    public void removeFromMemory(String room,String color) throws RemoteException{
+        memory.get(room).remove(color);
+    }
+    
+    @Override
     public RoomTime colorInRoom(String color) throws RemoteException{
         PriorityQueue<RoomTime> queue = new PriorityQueue<RoomTime>(1,new Compare());
         //String rm="";
@@ -226,14 +232,14 @@ public class IAController extends UnicastRemoteObject implements IAControllerInt
         }
     }
     
-    protected boolean isArrived() {
+    protected boolean isArrived(long timeLimit) {
         long t = System.currentTimeMillis();
         List<Percept> percepts = null;
 
         while (true) {
             try {
                 percepts = server.getAllPerceptsFromEntity(bot);
-                if (System.currentTimeMillis() - t > 3000) // overtime
+                if (System.currentTimeMillis() - t > timeLimit) // overtime
                 {
                     return false;
                 }
@@ -264,7 +270,7 @@ public class IAController extends UnicastRemoteObject implements IAControllerInt
 
                         do {
                             goTo("DropZone");
-                        } while (!isArrived()/* && ias.getCurrent() < ias.getColors().length*/);
+                        } while (!isArrived(3000)/* && ias.getCurrent() < ias.getColors().length*/);
 
                         putDown();
                         ias.putBox(getBlockColor(p.toProlog()));

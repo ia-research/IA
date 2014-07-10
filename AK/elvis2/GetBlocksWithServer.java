@@ -42,7 +42,7 @@ public class GetBlocksWithServer extends IAController {
         while (i < rooms.length) {
             goTo(rooms[i++ % rooms.length]);
 
-            if (!isArrived()) {
+            if (!isArrived(3000)) {
                 continue;
             }
             // get all colors from room
@@ -60,6 +60,7 @@ public class GetBlocksWithServer extends IAController {
         String room=null;
         List<Percept> percepts = null;
         String color=null;
+        int impossibleCount=0;
         try {
             //System.setErr(new PrintStream("IA_err.txt"));
         } catch (Exception ex) {
@@ -82,8 +83,11 @@ public class GetBlocksWithServer extends IAController {
                 goTo(rooms[i++ % rooms.length]);
                 room=rooms[(i-1)%rooms.length];
             }
-            if (!isArrived()) {
-                continue;
+            if (!isArrived(3000)) {
+                //retry
+                goTo(room);
+                if(!isArrived(500))
+                    continue;
             }
             // for memory
 
@@ -103,8 +107,17 @@ public class GetBlocksWithServer extends IAController {
                 
                 if(!goToBlock(percepts,color)){
                     //reset
+                    impossibleCount++;
+                    ias.noSuchColor(room,color);
                     goTo("FrontDropZone");
                     Thread.sleep(300);
+                }else{
+                    impossibleCount=0;
+                }
+                
+                if(impossibleCount>=rooms.length){
+                    System.out.println("Impossible");
+                    break;
                 }
                 /*
                  // stop traversal
@@ -117,6 +130,7 @@ public class GetBlocksWithServer extends IAController {
                 addToMemory(percepts, room);
             }
         }
+        goTo("FrontDropZone");
     }
 
     public void printMemory() {

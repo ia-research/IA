@@ -135,6 +135,14 @@ public class IAServerImpl extends UnicastRemoteObject implements IAServerInterfa
         }
     }
     
+    public synchronized void noSuchColor(String room, String color) throws RemoteException{
+        for (IAControllerInterface bot : bots.values()) {
+            try{
+                bot.removeFromMemory(room,color);
+            }catch(Exception ex){}
+        }
+    }
+    
     /*public static Identifier findParameter(String[] args, InitParam param) {
         for (int i = 0; i < args.length - 1; i++) {
             if (args[i].equalsIgnoreCase("-" + param.nameLower())) {

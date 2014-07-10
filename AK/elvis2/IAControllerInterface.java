@@ -9,4 +9,5 @@ public interface IAControllerInterface extends Remote {
 	public void receiveMessage(String s,String sender) throws RemoteException;
         public RoomTime colorInRoom(String color) throws RemoteException;
         public void goToMostPossibleExistRoom(String room) throws RemoteException;
+        public void removeFromMemory(String room,String color) throws RemoteException;
 }
